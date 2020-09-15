@@ -121,6 +121,22 @@ class UserRepository {
     }
   }
 
+  Future<bool> updateSummary(String summary) async {
+    print("I am in updateSummary");
+    print(summary);
+
+    Map<String, dynamic> data =
+        await JobPortalApi().updateSummary(summary, user);
+
+    print(data);
+
+    if (data['status'] == true) {
+      return true;
+    } else {
+      throw Exception(data['message']);
+    }
+  }
+
   Future<bool> updateProfile(JobSeekerSignup jobSeekerSignup) async {
     Map<String, dynamic> senddata = {};
 
@@ -144,6 +160,38 @@ class UserRepository {
       print("updatedSuccessfully");
 
       hasUser();
+      return true;
+    } else {
+      throw Exception(data['message']);
+    }
+  }
+
+  Future<bool> addUpdateExperience(
+    String title,
+    String companyName,
+    String countryName,
+    String cityName,
+    String date,
+  ) async {
+    Map<String, dynamic> senddata = {};
+
+    senddata.addAll({
+      'job_title': title,
+      'company_name': companyName,
+      'exp_country': countryName,
+      'exp_city': cityName,
+      'start_date': date,
+      'user_id': user.userId,
+      'user_type': user.userType,
+      'mobile_token': user.mobileToken,
+    });
+
+    Map<String, dynamic> data =
+        await JobPortalApi().addUpdateExperience(senddata);
+
+    print(data);
+
+    if (data['status'] == true) {
       return true;
     } else {
       throw Exception(data['message']);

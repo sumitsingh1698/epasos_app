@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:jobportal_working/change_password/change_password.dart';
 import 'package:jobportal_working/manageskill/bloc/manageskill_bloc.dart';
 import 'package:jobportal_working/model/api_model.dart';
@@ -206,6 +207,35 @@ class JobPortalApi {
     }
   }
 
+  Future<Map<String, dynamic>> updateSummary(String summary, User user) async {
+    final url = "Api/update_summary";
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    FormData formData = new FormData.fromMap({
+      "summary": summary,
+      "user_id": user.userId,
+      "user_type": user.userType,
+      "mobile_token": user.mobileToken
+    });
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
   Future<Map<String, dynamic>> updateProfile(
       Map<String, dynamic> sendData) async {
     final url = "Api/update_profile";
@@ -215,6 +245,60 @@ class JobPortalApi {
     var dio = Dio();
 
     FormData formData = new FormData.fromMap(sendData);
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  Future<Map<String, dynamic>> addUpdateExperience(
+      Map<String, dynamic> sendData) async {
+    final url = "Api/add_update_exerience";
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    FormData formData = new FormData.fromMap(sendData);
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  // Get Dashboard Data
+  Future<dynamic> getDashboardData(User user) async {
+    final url = "Api/employee_dashboard";
+
+    FormData formData = new FormData.fromMap({
+      "user_id": user.userId,
+      "user_type": user.userType,
+      "mobile_token": user.mobileToken
+    });
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
 
     var response = await dio.post(
       _baseUrl + url,

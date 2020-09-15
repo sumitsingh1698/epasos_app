@@ -31,6 +31,10 @@ class GoForSignUpEvent extends AuthenticationEvent {
   List<Object> get props => [type];
 }
 
+class ViewDashboardEvent extends AuthenticationEvent {}
+
+class ViewHomeEvent extends AuthenticationEvent {}
+
 class GoForListofJobEvent extends AuthenticationEvent {
   final String type;
   GoForListofJobEvent(this.type);

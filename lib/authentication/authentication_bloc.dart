@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:jobportal_working/api_connection/api_connection.dart';
+import 'package:jobportal_working/home/model/dashboard_model.dart';
 import 'package:jobportal_working/model/user_model.dart';
 import 'package:jobportal_working/user_repository/user_repository.dart';
 import 'package:meta/meta.dart';
@@ -30,13 +32,13 @@ class AuthenticationBloc
     }
 
     if (event is LoggedIn) {
-      yield AuthenticationLoading();
+      yield AuthenticationLoadingState();
 
       yield AuthenticationAuthenticated();
     }
 
     if (event is LoggedOut) {
-      yield AuthenticationLoading();
+      yield AuthenticationLoadingState();
       await userRepository.removeUser();
       yield AuthenticationUnauthenticated();
     }
@@ -54,6 +56,24 @@ class AuthenticationBloc
     }
     if (event is GoToManageEvent) {
       yield GotoManageSkillState();
+    }
+
+    if (event is ViewDashboardEvent) {
+      yield AuthenticationLoadingState();
+      try {
+        final dashboardData =
+            await JobPortalApi().getDashboardData(userRepository.user);
+        print("in event " + dashboardData.toString());
+
+        DashboardModel dashboardModel = DashboardModel.fromJson(dashboardData);
+
+        yield ViewDashboardState(dashboardModel);
+      } catch (e) {
+        yield AuthenticationFailedState(e.toString());
+      }
+    }
+    if (event is ViewHomeEvent) {
+      yield ViewHomeState();
     }
   }
 }

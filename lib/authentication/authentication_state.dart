@@ -11,9 +11,28 @@ class AuthenticationAuthenticated extends AuthenticationState {}
 
 class AuthenticationUnauthenticated extends AuthenticationState {}
 
-class AuthenticationLoading extends AuthenticationState {}
+class AuthenticationLoadingState extends AuthenticationState {}
+
+class AuthenticationFailedState extends AuthenticationState {
+  final String error;
+
+  AuthenticationFailedState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
 
 class GoForLoggedInState extends AuthenticationState {}
+
+class ViewDashboardState extends AuthenticationState {
+  final DashboardModel dashboardModel;
+
+  ViewDashboardState(this.dashboardModel);
+  @override
+  List<Object> get props => [dashboardModel];
+}
+
+class ViewHomeState extends AuthenticationState {}
 
 class GoForSignUpState extends AuthenticationState {
   final String type;

@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jobportal_working/authentication/authentication_bloc.dart';
+import 'package:jobportal_working/home/bloc/home_bloc.dart';
+import 'package:jobportal_working/home/home_panels/candidate_dashboard.dart';
 import 'package:jobportal_working/user_repository/user_repository.dart';
 
 import 'home_panels/home.dart';
@@ -14,6 +17,8 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   bool isUser;
+  AuthenticationState state;
+  int _currentActiveBottomButton = 0;
   List<BottomNavigationBarItem> buildBottomNavBarItems() {
     return [
       BottomNavigationBarItem(
@@ -53,6 +58,7 @@ class _HomepageState extends State<Homepage> {
 
   @override
   void initState() {
+    state = BlocProvider.of<AuthenticationBloc>(context).state;
     isUser = RepositoryProvider.of<UserRepository>(context).isUser();
     super.initState();
   }
@@ -80,38 +86,66 @@ class _HomepageState extends State<Homepage> {
           ),
         );
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Center(child: Text("Home")),
-          actions: [IconButton(icon: Icon(Icons.search), onPressed: () {})],
+      child: BlocListener<AuthenticationBloc, AuthenticationState>(
+        listener: (context, state) {
+          if (state is AuthenticationFailedState)
+            Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text('${state.error}'),
+              backgroundColor: Colors.red,
+            ));
+        },
+        child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+          builder: (context, state) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Center(
+                    child: state is ViewDashboardState
+                        ? Text("Dashboard       ")
+                        : Text("Home")),
+                actions: [
+                  state is ViewDashboardState
+                      ? Container()
+                      : IconButton(icon: Icon(Icons.search), onPressed: () {})
+                ],
+              ),
+              drawer: Container(
+                width: 250,
+                color: Colors.grey[500],
+                child: MyDrawer(),
+              ),
+              body: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                builder: (context, state) {
+                  if (state is ViewDashboardState) {
+                    return CandidateDashboard(state.dashboardModel);
+                  }
+                  return Home();
+                },
+              ),
+              bottomNavigationBar: BottomNavigationBar(
+                  onTap: (index) {
+                    if (index == 4) {
+                      // Navigator.push(context,
+                      //     MaterialPageRoute(builder: (context) => MyAccount()));
+                    } else if (index == 3) {
+                      BlocProvider.of<AuthenticationBloc>(context)
+                          .add(ViewDashboardEvent());
+                    } else if (index == 2) {
+                      // Navigator.push(context,
+                      //     MaterialPageRoute(builder: (context) => MyApplications()));
+                    } else {
+                      BlocProvider.of<AuthenticationBloc>(context)
+                          .add(ViewHomeEvent());
+                    }
+                  },
+                  type: BottomNavigationBarType.fixed,
+                  currentIndex: state is ViewDashboardState ? 3 : 0,
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  items: buildBottomNavBarItems()),
+            );
+          },
         ),
-        drawer: Container(
-          width: 250,
-          color: Colors.grey[500],
-          child: MyDrawer(),
-        ),
-        body: Home(),
-        bottomNavigationBar: BottomNavigationBar(
-            onTap: (index) {
-              if (index == 4) {
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => MyAccount()));
-              } else if (index == 3) {
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => CandidateDashboard()));
-              } else if (index == 2) {
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => MyApplications()));
-              }
-            },
-            type: BottomNavigationBarType.fixed,
-            currentIndex: 0,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            backgroundColor: Theme.of(context).primaryColor,
-            items: buildBottomNavBarItems()),
       ),
     );
   }

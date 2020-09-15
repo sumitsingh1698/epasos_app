@@ -30,23 +30,23 @@ class App extends StatelessWidget {
           if (state is AuthenticationUnintialized) {
             return SplashPage();
           }
-          if (state is AuthenticationAuthenticated) {
-            print("authentication Builder");
-            return Homepage();
-          }
-          if (state is AuthenticationUnauthenticated) {
-            return Homepage();
-          }
+          // if (state is AuthenticationAuthenticated) {
+          //   print("authentication Builder");
+          //   return Homepage();
+          // }
+          // if (state is AuthenticationUnauthenticated) {
+          //   return Homepage();
+          // }
 
-          if (state is AuthenticationLoading) {
+          if (state is AuthenticationLoadingState) {
             return LoadingIndicator();
           }
           if (state is GoForLoggedInState) {
             return LoginPage();
           }
-          if (state is BacktoHomeState) {
-            return Homepage();
-          }
+          // if (state is BacktoHomeState) {
+          //   return Homepage();
+          // }
           if (state is GoForSignUpState) {
             return EmployeeSignUpPage(state.type);
           }
@@ -56,9 +56,10 @@ class App extends StatelessWidget {
           if (state is GotoManageSkillState) {
             return ManageSkillPage();
           }
-          return Scaffold(
-            body: Container(),
-          );
+          // if (state is ViewDashboardState || state is ViewHomeState) {
+          //   return Homepage();
+          // }
+          return Homepage();
         },
       ),
       routes: {
