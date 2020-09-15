@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jobportal_working/authentication/authentication_bloc.dart';
+import 'package:jobportal_working/list_of_jobs/listofJobs_listview.dart';
+import 'package:jobportal_working/list_of_jobs/listofJobs_page.dart';
 import 'package:jobportal_working/login/login_page.dart';
+import 'package:jobportal_working/manageskill/mangage_skill_page.dart';
 import 'package:jobportal_working/signup/signup_page.dart';
 import 'package:jobportal_working/utils/loading_indicator.dart';
 
@@ -46,6 +49,12 @@ class App extends StatelessWidget {
           }
           if (state is GoForSignUpState) {
             return EmployeeSignUpPage(state.type);
+          }
+          if (state is GoToListOfJobState) {
+            return ListOfJobsPage(state.type);
+          }
+          if (state is GotoManageSkillState) {
+            return ManageSkillPage();
           }
           return Scaffold(
             body: Container(),

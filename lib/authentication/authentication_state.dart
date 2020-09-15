@@ -22,4 +22,13 @@ class GoForSignUpState extends AuthenticationState {
   List<Object> get props => [type];
 }
 
+class GoToListOfJobState extends AuthenticationState {
+  final String type;
+  GoToListOfJobState(this.type);
+  @override
+  List<Object> get props => [type];
+}
+
+class GotoManageSkillState extends AuthenticationState {}
+
 class BacktoHomeState extends AuthenticationState {}

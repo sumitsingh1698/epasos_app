@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jobportal_working/authentication/authentication_bloc.dart';
+import 'package:jobportal_working/change_password/change_password.dart';
 import 'package:jobportal_working/home/home_panels/signup_dialog_widget.dart';
 import 'package:jobportal_working/model/user_model.dart';
+import 'package:jobportal_working/update_profile/update_profile_page.dart';
 import 'package:jobportal_working/user_repository/user_repository.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -76,8 +78,28 @@ class MyDrawer extends StatelessWidget {
             ),
             MyDrawerTile(Icon(Icons.account_circle), () {}, "Dashboard"),
             MyDrawerTile(Icon(Icons.apps), () {}, "My Application"),
-            MyDrawerTile(Icon(Icons.list), () {}, "Job Matching"),
-            MyDrawerTile(Icon(Icons.add), () {}, "Manage Skills"),
+            MyDrawerTile(Icon(Icons.list), () {
+              BlocProvider.of<AuthenticationBloc>(context)
+                  .add(GoForListofJobEvent("listofjobs"));
+            }, "List of jobs"),
+            MyDrawerTile(Icon(Icons.add), () {
+              BlocProvider.of<AuthenticationBloc>(context)
+                  .add(GoToManageEvent());
+            }, "Manage Skills"),
+            MyDrawerTile(Icon(Icons.add), () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UpdateProfilePage(
+                          RepositoryProvider.of<UserRepository>(context))));
+            }, "Update Profile"),
+            MyDrawerTile(Icon(Icons.add), () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ChangePassword(
+                          RepositoryProvider.of<UserRepository>(context))));
+            }, "Change Password"),
             MyDrawerTile(Icon(Icons.add), () {
               BlocProvider.of<AuthenticationBloc>(context).add(LoggedOut());
             }, "Logout"),

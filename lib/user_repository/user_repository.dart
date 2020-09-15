@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:jobportal_working/api_connection/api_connection.dart';
+import 'package:jobportal_working/change_password/change_password.dart';
 import 'package:jobportal_working/model/api_model.dart';
 import 'package:jobportal_working/model/user_model.dart';
 import 'package:jobportal_working/signup/model/employee_signup.dart';
@@ -92,6 +93,60 @@ class UserRepository {
       return true;
     } else {
       throw Exception("${data['message']}");
+    }
+  }
+
+  Future<bool> addSkill(String skill) async {
+    Map<String, dynamic> data = await JobPortalApi().addSkill(skill, user);
+
+    print(data);
+
+    if (data['status'] == true) {
+      return true;
+    } else {
+      throw Exception("${data['message']}");
+    }
+  }
+
+  Future<bool> changePassword(String oldPassword, String newPassword) async {
+    Map<String, dynamic> data =
+        await JobPortalApi().changePassword(oldPassword, newPassword, user);
+
+    print(data);
+
+    if (data['status'] == true) {
+      return true;
+    } else {
+      throw Exception(data['message']);
+    }
+  }
+
+  Future<bool> updateProfile(JobSeekerSignup jobSeekerSignup) async {
+    Map<String, dynamic> senddata = {};
+
+    senddata.addAll({
+      'full_name': jobSeekerSignup.fullName,
+      'gender': jobSeekerSignup.gender,
+      'dob_day': jobSeekerSignup.dobDay,
+      'dob_month': jobSeekerSignup.dobMonth,
+      'dob_year': jobSeekerSignup.dobYear,
+      'present_address': jobSeekerSignup.currentAddress,
+      'country': jobSeekerSignup.country,
+      'city': jobSeekerSignup.city,
+      'mobile': jobSeekerSignup.phone,
+      'user_id': user.userId,
+      'user_type': user.userType,
+      'mobile_token': user.mobileToken,
+    });
+
+    Map<String, dynamic> data = await JobPortalApi().updateProfile(senddata);
+    if (data['status'] == true) {
+      print("updatedSuccessfully");
+
+      hasUser();
+      return true;
+    } else {
+      throw Exception(data['message']);
     }
   }
 }

@@ -31,6 +31,16 @@ class GoForSignUpEvent extends AuthenticationEvent {
   List<Object> get props => [type];
 }
 
+class GoForListofJobEvent extends AuthenticationEvent {
+  final String type;
+  GoForListofJobEvent(this.type);
+
+  @override
+  List<Object> get props => [type];
+}
+
+class GoToManageEvent extends AuthenticationEvent {}
+
 class BackToHomeEvent extends AuthenticationEvent {}
 
 class LoggedOut extends AuthenticationEvent {}

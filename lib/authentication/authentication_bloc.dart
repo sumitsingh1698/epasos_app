@@ -49,5 +49,11 @@ class AuthenticationBloc
     if (event is BackToHomeEvent) {
       yield BacktoHomeState();
     }
+    if (event is GoForListofJobEvent) {
+      yield GoToListOfJobState("listofjobs");
+    }
+    if (event is GoToManageEvent) {
+      yield GotoManageSkillState();
+    }
   }
 }
