@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:jobportal_working/change_password/change_password.dart';
-import 'package:jobportal_working/manageskill/bloc/manageskill_bloc.dart';
 import 'package:jobportal_working/model/api_model.dart';
 import 'package:jobportal_working/model/user_model.dart';
 import 'package:jobportal_working/signup/model/employee_signup.dart';
@@ -291,6 +288,89 @@ class JobPortalApi {
     final url = "Api/employee_dashboard";
 
     FormData formData = new FormData.fromMap({
+      "user_id": user.userId,
+      "user_type": user.userType,
+      "mobile_token": user.mobileToken
+    });
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  Future<dynamic> deleteExperience(String experienceId, User user) async {
+    final url = "Api/delete_experience";
+
+    FormData formData = new FormData.fromMap({
+      "id": experienceId,
+      "user_id": user.userId,
+      "user_type": user.userType,
+      "mobile_token": user.mobileToken
+    });
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  Future<Map<String, dynamic>> addUpdateQualification(
+      Map<String, dynamic> sendData) async {
+    final url = "Api/add_update_education";
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    FormData formData = new FormData.fromMap(sendData);
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  Future<dynamic> deleteQualification(String qualificationId, User user) async {
+    final url = "Api/delete_education";
+
+    FormData formData = new FormData.fromMap({
+      "id": qualificationId,
       "user_id": user.userId,
       "user_type": user.userType,
       "mobile_token": user.mobileToken

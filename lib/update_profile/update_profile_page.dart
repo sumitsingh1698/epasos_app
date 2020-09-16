@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jobportal_working/authentication/authentication_bloc.dart';
-import 'package:jobportal_working/signup/bloc/signup_bloc.dart';
+import 'package:jobportal_working/home/model/dashboard_model.dart';
 import 'package:jobportal_working/signup/model/jobseeker_signup.dart';
 import 'package:jobportal_working/user_repository/user_repository.dart';
 import 'package:jobportal_working/utils/customRaisedCircularButton.dart';
@@ -9,8 +9,9 @@ import 'package:jobportal_working/utils/mytoast.dart';
 
 class UpdateProfilePage extends StatefulWidget {
   final UserRepository userRepository;
+  final Detail detail;
 
-  UpdateProfilePage(this.userRepository);
+  UpdateProfilePage(this.userRepository, {this.detail});
   @override
   _UpdateProfilePageState createState() => _UpdateProfilePageState();
 }
@@ -19,14 +20,29 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
   bool isLoading = false;
 
   final full_name = TextEditingController();
-  String gender = 'Male';
-  String dob_day = '01';
-  String dob_month = '01';
-  String dob_year = '2000';
+  String gender = 'male';
+  DateTime dob;
   final present_address = TextEditingController();
   String country = "India";
   final city = TextEditingController();
   final mobile = TextEditingController();
+
+  void updateField() {
+    full_name.text = widget.detail.firstName + widget.detail.lastName;
+    gender = widget.detail.gender.toLowerCase();
+    mobile.text = widget.detail.mobile;
+    //print(widget.detail.gender);
+    dob = DateTime.parse(widget.detail.dob);
+    present_address.text = widget.detail.presentAddress;
+    country = widget.detail.country;
+    city.text = widget.detail.city;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    updateField();
+  }
 
   Widget getTitleText(String text) {
     return Container(
@@ -81,9 +97,9 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
     JobSeekerSignup jobSeekerSignup = JobSeekerSignup(
         fullName: full_name.text,
         gender: gender,
-        dobDay: dob_day,
-        dobMonth: dob_month,
-        dobYear: dob_year,
+        dobDay: dob.day.toString(),
+        dobMonth: dob.month.toString(),
+        dobYear: dob.year.toString(),
         currentAddress: present_address.text,
         country: country,
         city: city.text,
@@ -91,13 +107,14 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
 
     try {
       await widget.userRepository.updateProfile(jobSeekerSignup);
-      setState(() {
-        isLoading = false;
-      });
-      BlocProvider.of<AuthenticationBloc>(context).add(BackToHomeEvent());
+
+      BlocProvider.of<AuthenticationBloc>(context).add(ViewDashboardEvent());
       MyToast.showToastMeasgage("Updated Successfully", color: Colors.green);
       Navigator.pop(context);
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       MyToast.showToastMeasgage("$e", color: Colors.red);
     }
   }
@@ -144,7 +161,7 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
                                 child: Row(
                                   children: [
                                     getDropDownButton(
-                                        ['Male', 'Female', 'Semi'],
+                                        ['male', 'female', 'semi'],
                                         "Gender",
                                         gender, (value) {
                                       setState(() {
@@ -166,30 +183,19 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
                             flex: 2,
                             child: Container(
                                 padding: EdgeInsets.only(right: 30.0),
-                                child: Row(
-                                  children: [
-                                    getDropDownButton(
-                                        ['01', '02', '03'], "DOB", dob_day,
-                                        (value) {
-                                      setState(() {
-                                        dob_day = value;
-                                      });
-                                    }),
-                                    getDropDownButton(
-                                        ['01', '02', '03', '04', '05'],
-                                        "DOB",
-                                        dob_month, (value) {
-                                      setState(() {
-                                        dob_month = value;
-                                      });
-                                    }),
-                                    getDropDownButton(["2000", "2019", "2020"],
-                                        "DOB", dob_year, (value) {
-                                      setState(() {
-                                        dob_year = value;
-                                      });
-                                    }),
-                                  ],
+                                child: CustomRaisedCircularButton(
+                                  onPressed: () async {
+                                    dob = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime(1950),
+                                        firstDate: DateTime(1950),
+                                        lastDate: DateTime.now());
+
+                                    setState(() {});
+                                  },
+                                  title: dob == null
+                                      ? "DOB Update"
+                                      : "${dob.day} / ${dob.month} / ${dob.year}",
                                 )),
                           ),
                         ],
@@ -233,12 +239,17 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
                       SizedBox(
                         height: 5.0,
                       ),
-                      Center(
-                          child: CustomRaisedCircularButton(
-                              onPressed: () {
-                                onPressedUpdateButton();
-                              },
-                              title: "Update"))
+                      isLoading == true
+                          ? Center(child: CircularProgressIndicator())
+                          : Center(
+                              child: CustomRaisedCircularButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    onPressedUpdateButton();
+                                  },
+                                  title: "Update"))
                     ],
                   ),
                 ),

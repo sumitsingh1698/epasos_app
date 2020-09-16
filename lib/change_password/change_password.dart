@@ -30,11 +30,6 @@ class _ChangePasswordState extends State<ChangePassword> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Future<void> updatePassword() async {
     try {
       await widget.userRepository.changePassword(oldPasswordTextController.text,

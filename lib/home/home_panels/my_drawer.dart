@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jobportal_working/authentication/authentication_bloc.dart';
 import 'package:jobportal_working/change_password/change_password.dart';
-import 'package:jobportal_working/dashboard_querys/edit_summary_page.dart';
 import 'package:jobportal_working/home/home_panels/signup_dialog_widget.dart';
 import 'package:jobportal_working/model/user_model.dart';
 import 'package:jobportal_working/update_profile/update_profile_page.dart';
@@ -69,7 +68,9 @@ class _MyDrawerState extends State<MyDrawer> {
           companyNameTextController.text,
           countryInput,
           cityNameTextController.text,
-          "${experienceStartDateTime.day}-${experienceStartDateTime.month}-${experienceStartDateTime.year}");
+          "${experienceStartDateTime.day}-${experienceStartDateTime.month}-${experienceStartDateTime.year}",
+          "present",
+          null);
       setState(() {
         isLoading = false;
       });

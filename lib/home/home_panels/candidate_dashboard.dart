@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jobportal_working/api_connection/api_connection.dart';
 import 'package:jobportal_working/authentication/authentication_bloc.dart';
+import 'package:jobportal_working/home/home_panels/qualification_page.dart';
+import 'package:jobportal_working/home/home_panels/experiences_page.dart';
 import 'package:jobportal_working/home/home_widget/additional_dashboard_widget.dart';
 import 'package:jobportal_working/home/model/dashboard_model.dart';
 import 'package:jobportal_working/update_profile/update_profile_page.dart';
 import 'package:jobportal_working/user_repository/user_repository.dart';
-import 'package:jobportal_working/utils/appdropboxbutton.dart';
-import 'package:jobportal_working/utils/apptextfield.dart';
 import 'package:jobportal_working/utils/customRaisedCircularButton.dart';
 import 'package:jobportal_working/utils/mycustomDialogBox.dart';
 import 'package:jobportal_working/utils/mytoast.dart';
@@ -27,12 +28,6 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
   UserRepository userRepository;
 
   final summaryTextController = TextEditingController();
-  final jobTitleTextController = TextEditingController();
-  final cityNameTextController = TextEditingController();
-  final companyNameTextController = TextEditingController();
-
-  DateTime experienceStartDateTime = DateTime.now();
-  StreamController<String> controller = StreamController<String>.broadcast();
 
   String countryInput = "India";
 
@@ -80,95 +75,6 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
       print(e);
       MyToast.showToastMeasgage("$e", color: Colors.red);
     }
-  }
-
-  Future<void> addUpdateExperience() async {
-    try {
-      await userRepository.addUpdateExperience(
-          jobTitleTextController.text,
-          companyNameTextController.text,
-          countryInput,
-          cityNameTextController.text,
-          "${experienceStartDateTime.day}-${experienceStartDateTime.month}-${experienceStartDateTime.year}");
-
-      MyToast.showToastMeasgage("Updated Successfully", color: Colors.green);
-      Navigator.pop(context);
-    } catch (e) {
-      MyToast.showToastMeasgage("$e", color: Colors.red);
-    }
-  }
-
-  Widget getExperenceDialogWidget() {
-    return Container(
-      child: Column(
-        children: [
-          AppTextField(
-              controller: jobTitleTextController,
-              icon: Icon(
-                Icons.title,
-                size: 25.0,
-              ),
-              label: "",
-              hint: "Job Title",
-              obscureText: false),
-          AppTextField(
-              controller: companyNameTextController,
-              icon: Icon(
-                Icons.title,
-                size: 25.0,
-              ),
-              label: "",
-              hint: "Company Name",
-              obscureText: false),
-          AppDropDownBox(
-            intialValue: countryInput,
-            onChange: (value) {
-              setState(() {
-                countryInput = value;
-              });
-            },
-            list: ["Australia", "China", "India", "America"],
-            hint: "",
-            width: MediaQuery.of(context).size.width,
-          ),
-          AppTextField(
-              controller: cityNameTextController,
-              icon: Icon(
-                Icons.title,
-                size: 25.0,
-              ),
-              label: "",
-              hint: "City Name",
-              obscureText: false),
-          CustomRaisedCircularButton(
-              onPressed: () {
-                print("pressed");
-                showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime.now())
-                    .then((value) {
-                  print(value.year);
-                  experienceStartDateTime = value;
-                  controller.add(
-                      "Start Date : ${experienceStartDateTime.day} / ${experienceStartDateTime.month} / ${experienceStartDateTime.year}");
-                });
-
-                print("done");
-                // print(experienceStartDateTime.year);
-              },
-              title: "Change Date"),
-          StreamBuilder(
-              stream: controller.stream,
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                return Text(snapshot.hasData
-                    ? snapshot.data
-                    : "Start Date : ${experienceStartDateTime.day} / ${experienceStartDateTime.month} / ${experienceStartDateTime.year}");
-              }),
-        ],
-      ),
-    );
   }
 
   Widget firstBlock() {
@@ -272,7 +178,9 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => UpdateProfilePage(
-                              RepositoryProvider.of<UserRepository>(context))));
+                                RepositoryProvider.of<UserRepository>(context),
+                                detail: widget.dashboardModel.data.row,
+                              )));
                 },
                 child: Container(
                   child: Row(
@@ -371,17 +279,11 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    MyCustomDialog.showMe(
-                        context: context,
-                        title: "Experience",
-                        widgets: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20.0, vertical: 10.0),
-                          child: getExperenceDialogWidget(),
-                        ),
-                        onSubmit: () {
-                          addUpdateExperience();
-                        });
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ExperiencePage(this.userRepository)));
                   },
                   child: Row(
                     children: [
@@ -466,13 +368,70 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                         Icons.edit,
                         color: Theme.of(context).primaryColor,
                       ),
-                      onPressed: () {}),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ExperiencePage(
+                                      this.userRepository,
+                                      experience: widget.dashboardModel.data
+                                          .experience[index],
+                                    )));
+                      }),
                   IconButton(
                       icon: Icon(
                         Icons.cancel,
                         color: Colors.red,
                       ),
-                      onPressed: () {}),
+                      onPressed: () {
+                        MyCustomDialog.showMe(
+                            context: context,
+                            title: "Warning !!!",
+                            widgets: Container(
+                              padding: EdgeInsets.all(30.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Are you sure for want to delete your Experience ?? ",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    " ${widget.dashboardModel.data.experience[index].jobTitle} ",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            onSubmit: () {
+                              try {
+                                JobPortalApi()
+                                    .deleteExperience(
+                                        widget.dashboardModel.data
+                                            .experience[index].iD,
+                                        RepositoryProvider.of<UserRepository>(
+                                                context)
+                                            .user)
+                                    .then((value) =>
+                                        BlocProvider.of<AuthenticationBloc>(
+                                                context)
+                                            .add(ViewDashboardEvent()));
+
+                                Navigator.of(context).pop();
+                                MyToast.showToastMeasgage(
+                                    "Deleted Successfully",
+                                    color: Colors.green);
+                              } catch (e) {
+                                MyToast.showToastMeasgage("$e",
+                                    color: Colors.red);
+                              }
+                            });
+                      }),
                 ],
               )
             ],
@@ -545,6 +504,130 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                   children: [
                     Container(
                       child: Text(
+                        getText(widget.dashboardModel.data.degrees[index].text),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 4.0,
+                    ),
+                    Text(
+                      getText(
+                        widget.dashboardModel.data.degrees[index].val,
+                      ),
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 4.0,
+                    ),
+                    Text(
+                      getText(
+                        widget.dashboardModel.data.degrees[index].displayOrder,
+                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                children: [
+                  IconButton(
+                      icon: Icon(
+                        Icons.edit,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: () {}),
+                  IconButton(
+                      icon: Icon(
+                        Icons.cancel,
+                        color: Colors.red,
+                      ),
+                      onPressed: () {}),
+                ],
+              )
+            ],
+          ),
+        );
+      },
+      // Or, uncomment the following line:
+      childCount: widget.dashboardModel.data.qualification.length,
+    );
+  }
+
+  Widget qualificationTitleBlock() {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 18.0),
+                  child: Text(
+                    "Qualitfication",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                QualificationPage(userRepository)));
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        "Add Another",
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(icon: Icon(Icons.add_box), onPressed: () {}),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            color: Colors.grey[300],
+            width: double.infinity,
+            height: 40,
+          ),
+        ],
+      ),
+    );
+  }
+
+  SliverChildBuilderDelegate qualificationBlock() {
+    return SliverChildBuilderDelegate(
+      (BuildContext context, int index) {
+        return Container(
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+            color: Colors.grey[300],
+            width: 1.0,
+          ))),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      child: Text(
                         getText(widget.dashboardModel.data.qualification[index]
                             .institude),
                         style: TextStyle(
@@ -576,6 +659,42 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                       ),
                       style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
+                    SizedBox(
+                      height: 4.0,
+                    ),
+                    // Text(
+                    //   getText(
+                    //     widget.dashboardModel.data.qualification[index]
+                    //         .degreeLevel,
+                    //   ),
+                    //   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    // ),
+                    // SizedBox(
+                    //   height: 4.0,
+                    // ),
+                    Text(
+                      "Completion Year :" +
+                          getText(
+                            widget.dashboardModel.data.qualification[index]
+                                .completionYear,
+                          ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    ),
+                    SizedBox(
+                      height: 4.0,
+                    ),
+                    Text(
+                      getText(
+                            widget
+                                .dashboardModel.data.qualification[index].city,
+                          ) +
+                          " " +
+                          getText(
+                            widget.dashboardModel.data.qualification[index]
+                                .country,
+                          ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    ),
                   ],
                 ),
               ),
@@ -586,13 +705,69 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                         Icons.edit,
                         color: Theme.of(context).primaryColor,
                       ),
-                      onPressed: () {}),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => QualificationPage(
+                                      userRepository,
+                                      qualification: widget.dashboardModel.data
+                                          .qualification[index],
+                                    )));
+                      }),
                   IconButton(
                       icon: Icon(
                         Icons.cancel,
                         color: Colors.red,
                       ),
-                      onPressed: () {}),
+                      onPressed: () {
+                        MyCustomDialog.showMe(
+                            context: context,
+                            title: "Warning !!!",
+                            widgets: Container(
+                              padding: EdgeInsets.all(30.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Are you sure for want to delete your Qualification ?? ",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    " ${widget.dashboardModel.data.experience[index].jobTitle} ",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            onSubmit: () {
+                              try {
+                                JobPortalApi()
+                                    .deleteQualification(
+                                        widget.dashboardModel.data
+                                            .qualification[index].iD,
+                                        RepositoryProvider.of<UserRepository>(
+                                                context)
+                                            .user)
+                                    .then((value) =>
+                                        BlocProvider.of<AuthenticationBloc>(
+                                                context)
+                                            .add(ViewDashboardEvent()));
+                                Navigator.of(context).pop();
+                                MyToast.showToastMeasgage(
+                                    "Deleted Successfully",
+                                    color: Colors.green);
+                              } catch (e) {
+                                MyToast.showToastMeasgage("$e",
+                                    color: Colors.red);
+                              }
+                            });
+                      })
                 ],
               )
             ],
@@ -852,6 +1027,12 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
             ),
             SliverList(
               delegate: fifthBlock(),
+            ),
+            SliverToBoxAdapter(
+              child: qualificationTitleBlock(),
+            ),
+            SliverList(
+              delegate: qualificationBlock(),
             ),
             SliverToBoxAdapter(
               child: sixthBlock(),

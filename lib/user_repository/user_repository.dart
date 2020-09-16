@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:jobportal_working/api_connection/api_connection.dart';
 import 'package:jobportal_working/change_password/change_password.dart';
+import 'package:jobportal_working/home/model/dashboard_model.dart';
 import 'package:jobportal_working/model/api_model.dart';
 import 'package:jobportal_working/model/user_model.dart';
 import 'package:jobportal_working/signup/model/employee_signup.dart';
@@ -171,7 +172,9 @@ class UserRepository {
     String companyName,
     String countryName,
     String cityName,
-    String date,
+    String startDate,
+    String endDate,
+    String experienceId,
   ) async {
     Map<String, dynamic> senddata = {};
 
@@ -180,14 +183,49 @@ class UserRepository {
       'company_name': companyName,
       'exp_country': countryName,
       'exp_city': cityName,
-      'start_date': date,
+      'start_date': startDate,
+      'user_id': user.userId,
+      'user_type': user.userType,
+      'mobile_token': user.mobileToken,
+      'end_date': endDate.toLowerCase()
+    });
+
+    if (experienceId != null) senddata.addAll({'experience_id': experienceId});
+
+    Map<String, dynamic> data =
+        await JobPortalApi().addUpdateExperience(senddata);
+
+    print(data);
+
+    if (data['status'] == true) {
+      return true;
+    } else {
+      throw Exception(data['message']);
+    }
+  }
+
+  Future<bool> addUpdateQualification(
+    Qualification qualification,
+  ) async {
+    Map<String, dynamic> senddata = {};
+
+    senddata.addAll({
+      'degree_title': qualification.degreeTitle,
+      'major_subject': qualification.major,
+      'institute': qualification.institude,
+      'edu_country': qualification.country,
+      'edu_city': qualification.city,
+      'completion_year': qualification.completionYear,
       'user_id': user.userId,
       'user_type': user.userType,
       'mobile_token': user.mobileToken,
     });
 
+    if (qualification.iD != null)
+      senddata.addAll({'education_id': qualification.iD});
+
     Map<String, dynamic> data =
-        await JobPortalApi().addUpdateExperience(senddata);
+        await JobPortalApi().addUpdateQualification(senddata);
 
     print(data);
 

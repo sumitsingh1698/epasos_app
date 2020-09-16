@@ -111,29 +111,29 @@ class Detail {
   String email;
   String password;
   String presentAddress;
-  Null permanentAddress;
+  String permanentAddress;
   String dated;
   String country;
   String city;
   String gender;
   String dob;
-  Null phone;
-  Null photo;
-  Null defaultCvId;
+  String phone;
+  String photo;
+  String defaultCvId;
   String mobile;
   String homePhone;
-  Null cnic;
+  String cnic;
   String nationality;
-  Null careerObjective;
+  String careerObjective;
   String sts;
-  Null verificationCode;
+  String verificationCode;
   String firstLoginDate;
   String lastLoginDate;
-  Null slug;
+  String slug;
   String ipAddress;
-  Null oldId;
-  Null flag;
-  Null queueEmailSts;
+  String oldId;
+  String flag;
+  String queueEmailSts;
   String sendJobAlert;
 
   Detail(
@@ -243,13 +243,13 @@ class Experience {
   String jobTitle;
   String companyName;
   String startDate;
-  Null endDate;
+  String endDate;
   String city;
   String country;
-  Null responsibilities;
+  String responsibilities;
   String dated;
-  Null flag;
-  Null oldId;
+  String flag;
+  String oldId;
 
   Experience(
       {this.iD,
@@ -301,7 +301,7 @@ class Experience {
 class Qualification {
   String iD;
   String seekerID;
-  Null degreeLevel;
+  String degreeLevel;
   String degreeTitle;
   String major;
   String institude;
@@ -309,8 +309,8 @@ class Qualification {
   String city;
   String completionYear;
   String dated;
-  Null flag;
-  Null oldId;
+  String flag;
+  String oldId;
 
   Qualification(
       {this.iD,
@@ -363,7 +363,7 @@ class Degrees {
   String iD;
   String val;
   String text;
-  Null displayOrder;
+  String displayOrder;
 
   Degrees({this.iD, this.val, this.text, this.displayOrder});
 
@@ -389,7 +389,7 @@ class Resume {
   String seekerID;
   String isUploadedResume;
   String fileName;
-  Null resumeName;
+  String resumeName;
   String dated;
   String isDefaultResume;
 
@@ -428,17 +428,17 @@ class Resume {
 class RowAdditional {
   String iD;
   String seekerID;
-  Null languages;
-  Null interest;
-  Null awards;
-  Null additionalQualities;
+  String languages;
+  String interest;
+  String awards;
+  String additionalQualities;
   String convictedCrime;
-  Null crimeDetails;
+  String crimeDetails;
   String summary;
-  Null badHabits;
-  Null salary;
-  Null keywords;
-  Null description;
+  String badHabits;
+  String salary;
+  String keywords;
+  String description;
 
   RowAdditional(
       {this.iD,
