@@ -142,15 +142,15 @@ class JobPortalApi {
     }
   }
 
-  Future<Map<String, dynamic>> deleteSkill(String skill, User user) async {
-    final url = "Api/add_skill";
+  Future<Map<String, dynamic>> deleteSkill(String skillId, User user) async {
+    final url = "Api/remove_skill";
 
     print(_baseUrl + url);
 
     var dio = Dio();
 
     FormData formData = new FormData.fromMap({
-      "skilltest": skill,
+      "skill_id": skillId,
       "user_id": user.userId,
       "user_type": user.userType,
       "mobile_token": user.mobileToken,
@@ -371,6 +371,63 @@ class JobPortalApi {
 
     FormData formData = new FormData.fromMap({
       "id": qualificationId,
+      "user_id": user.userId,
+      "user_type": user.userType,
+      "mobile_token": user.mobileToken
+    });
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  Future<dynamic> deleteAppliedJob(String appliedJobId, User user) async {
+    final url = "Api/delete_applied_job";
+
+    FormData formData = new FormData.fromMap({
+      "id": appliedJobId,
+      "user_id": user.userId,
+      "user_type": user.userType,
+      "mobile_token": user.mobileToken
+    });
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  Future<dynamic> listOfSkill(User user) async {
+    final url = "Api/skill_list";
+
+    FormData formData = new FormData.fromMap({
       "user_id": user.userId,
       "user_type": user.userType,
       "mobile_token": user.mobileToken

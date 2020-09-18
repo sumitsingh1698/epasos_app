@@ -5,6 +5,7 @@ import 'package:jobportal_working/manageskill/bloc/manageskill_bloc.dart';
 import 'package:jobportal_working/user_repository/user_repository.dart';
 import 'package:jobportal_working/utils/apptextfield.dart';
 import 'package:jobportal_working/utils/customRaisedCircularButton.dart';
+import 'package:jobportal_working/utils/mycustomDialogBox.dart';
 
 class ManageSkillPage extends StatefulWidget {
   @override
@@ -56,53 +57,98 @@ class _ManageSkillPageState extends State<ManageSkillPage> {
               },
               child: BlocBuilder<ManageskillBloc, ManageskillState>(
                   builder: (context, state) {
-                return ListView.builder(
-                    itemCount: skills.length,
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
+                if (state is ManageskillLoadingState) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (state is ListofSkillState)
+                  return ListView.builder(
+                      itemCount: state.skills.data.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return Card(
+                              child: ListTile(
+                            // title: getTextFromField("", "Skill"),
+                            title: AppTextField(
+                                controller: addSkillTextController,
+                                icon: Icon(Icons.update),
+                                label: "Skill",
+                                hint: "  java",
+                                obscureText: false),
+
+                            trailing: state is ManageskillLoadingState
+                                ? CircularProgressIndicator()
+                                : CustomRaisedCircularButton(
+                                    onPressed: () {
+                                      BlocProvider.of<ManageskillBloc>(context)
+                                          .add(AddSkillEvent(
+                                              addSkillTextController.text));
+
+                                      BlocProvider.of<ManageskillBloc>(context)
+                                          .add(ManageskillViewList());
+                                    },
+                                    title: "Add +",
+                                    width: 100,
+                                  ),
+                          ));
+                        }
+
                         return Card(
-                            child: ListTile(
-                          // title: getTextFromField("", "Skill"),
-                          title: AppTextField(
-                              controller: addSkillTextController,
-                              icon: Icon(Icons.update),
-                              label: "Skill",
-                              hint: "  java",
-                              obscureText: false),
-
-                          trailing: state is ManageskillLoadingState
-                              ? CircularProgressIndicator()
-                              : CustomRaisedCircularButton(
-                                  onPressed: () {
-                                    BlocProvider.of<ManageskillBloc>(context)
-                                        .add(AddSkillEvent(
-                                            addSkillTextController.text));
-                                  },
-                                  title: "Add +",
-                                  width: 100,
-                                ),
-                        ));
-                      }
-
-                      return Card(
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            child: Text(
-                              "${skills[index][0].toUpperCase()}",
-                              style: TextStyle(color: Colors.white),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              child: Text(
+                                "${state.skills.data[index - 1].skillName[0].toUpperCase()}",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            title: Text(
+                              "${state.skills.data[index - 1].skillName}",
+                            ),
+                            trailing: IconButton(
+                              onPressed: () {
+                                MyCustomDialog.showMe(
+                                    context: context,
+                                    title: "Warning !!!",
+                                    widgets: Container(
+                                      padding: EdgeInsets.all(30.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "Are you sure for want to Delete your Skill ?? ",
+                                            style: TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            " ${state.skills.data[index - 1].skillName} ",
+                                            style: TextStyle(
+                                                fontSize: 17,
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    onSubmit: () {
+                                      BlocProvider.of<ManageskillBloc>(context)
+                                          .add(DeleteSkillEvent(
+                                              state.skills.data[index - 1].iD));
+                                      BlocProvider.of<ManageskillBloc>(context)
+                                          .add(ManageskillViewList());
+                                      Navigator.pop(context);
+                                    });
+                              },
+                              icon: Icon(Icons.cancel),
                             ),
                           ),
-                          title: Text(
-                            "${skills[index]}",
-                          ),
-                          trailing: IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.cancel),
-                          ),
-                        ),
-                      );
-                    });
+                        );
+                      });
+                return Container();
               }),
             )),
           ),

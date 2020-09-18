@@ -7,6 +7,11 @@ abstract class ManageskillState extends Equatable {
   List<Object> get props => [];
 }
 
+class ListofSkillState extends ManageskillState {
+  final Skill skills;
+  ListofSkillState(this.skills);
+}
+
 class ManageskillLoadingState extends ManageskillState {}
 
 class ManageskillFailedState extends ManageskillState {

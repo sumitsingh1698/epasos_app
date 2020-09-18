@@ -88,13 +88,20 @@ class _HomepageState extends State<Homepage> {
       },
       child: BlocListener<AuthenticationBloc, AuthenticationState>(
         listener: (context, state) {
-          if (state is AuthenticationFailedState)
+          if (state is AuthenticationFailedState) {
+            print(state.error);
             Scaffold.of(context).showSnackBar(SnackBar(
               content: Text('${state.error}'),
               backgroundColor: Colors.red,
             ));
+          }
         },
         child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+          buildWhen: (currentState, nextState) {
+            if (nextState is AuthenticationFailedState) return false;
+
+            return true;
+          },
           builder: (context, state) {
             return Scaffold(
               appBar: AppBar(
@@ -114,6 +121,12 @@ class _HomepageState extends State<Homepage> {
                 child: MyDrawer(),
               ),
               body: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                buildWhen: (currentState, nextState) {
+                  print(nextState);
+                  if (nextState is AuthenticationFailedState) return false;
+
+                  return true;
+                },
                 builder: (context, state) {
                   if (state is ViewDashboardState) {
                     return CandidateDashboard(state.dashboardModel);

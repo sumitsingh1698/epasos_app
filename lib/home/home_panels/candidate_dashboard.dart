@@ -460,19 +460,19 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {},
-                  child: Row(
-                    children: [
-                      Text(
-                        "Add Another",
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold),
-                      ),
-                      IconButton(icon: Icon(Icons.add_box), onPressed: () {}),
-                    ],
-                  ),
-                )
+                // GestureDetector(
+                //   onTap: () {},
+                //   child: Row(
+                //     children: [
+                //       Text(
+                //         "Add Another",
+                //         style: TextStyle(
+                //             fontSize: 14, fontWeight: FontWeight.bold),
+                //       ),
+                //       IconButton(icon: Icon(Icons.add_box), onPressed: () {}),
+                //     ],
+                //   ),
+                // )
               ],
             ),
             color: Colors.grey[300],
@@ -536,28 +536,28 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                   ],
                 ),
               ),
-              Row(
-                children: [
-                  IconButton(
-                      icon: Icon(
-                        Icons.edit,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      onPressed: () {}),
-                  IconButton(
-                      icon: Icon(
-                        Icons.cancel,
-                        color: Colors.red,
-                      ),
-                      onPressed: () {}),
-                ],
-              )
+              // Row(
+              //   children: [
+              //     IconButton(
+              //         icon: Icon(
+              //           Icons.edit,
+              //           color: Theme.of(context).primaryColor,
+              //         ),
+              //         onPressed: () {}),
+              //     IconButton(
+              //         icon: Icon(
+              //           Icons.cancel,
+              //           color: Colors.red,
+              //         ),
+              //         onPressed: () {}),
+              //   ],
+              // )
             ],
           ),
         );
       },
       // Or, uncomment the following line:
-      childCount: widget.dashboardModel.data.qualification.length,
+      childCount: widget.dashboardModel.data.degrees.length,
     );
   }
 
@@ -779,130 +779,180 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
     );
   }
 
-  // Widget eighthBlock() {
-  //   return Container(
-  //     child: Column(
-  //       mainAxisAlignment: MainAxisAlignment.start,
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Container(
-  //           child: Row(
-  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //             children: [
-  //               Padding(
-  //                 padding: const EdgeInsets.only(left: 18.0),
-  //                 child: Text(
-  //                   "My Job Applications",
-  //                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-  //                 ),
-  //               ),
-  //               GestureDetector(
-  //                 onTap: () {
-  //                   // Navigator.push(
-  //                   //     context,
-  //                   //     MaterialPageRoute(
-  //                   //         builder: (context) => MyApplications()));
-  //                 },
-  //                 child: Row(
-  //                   children: [
-  //                     Text(
-  //                       "View All",
-  //                       style: TextStyle(
-  //                           fontSize: 14, fontWeight: FontWeight.bold),
-  //                     ),
-  //                     IconButton(
-  //                         icon: Icon(Icons.edit),
-  //                         onPressed: () {
-  //                           // Navigator.push(
-  //                           //     context,
-  //                           //     MaterialPageRoute(
-  //                           //         builder: (context) => MyApplications()));
-  //                         }),
-  //                   ],
-  //                 ),
-  //               )
-  //             ],
-  //           ),
-  //           color: Colors.grey[300],
-  //           width: double.infinity,
-  //           height: 40,
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  Widget jobApplicationTitleBlock() {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 18.0),
+                  child: Text(
+                    "My Job Applications",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => MyApplications()));
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        "View All",
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //         builder: (context) => MyApplications()));
+                          }),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            color: Colors.grey[300],
+            width: double.infinity,
+            height: 40,
+          ),
+        ],
+      ),
+    );
+  }
 
-  // SliverChildBuilderDelegate ninthBlock() {
-  //   return SliverChildBuilderDelegate(
-  //     (BuildContext context, int index) {
-  //       return Container(
-  //         decoration: BoxDecoration(
-  //             border: Border(
-  //                 bottom: BorderSide(
-  //           color: Colors.grey[300],
-  //           width: 1.0,
-  //         ))),
-  //         child: Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           children: [
-  //             Expanded(
-  //               flex: 6,
-  //               child: Container(
-  //                 padding:
-  //                     EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: [
-  //                     Container(
-  //                       child: Text(
-  //                         "PHP Web Developer",
-  //                         style: TextStyle(
-  //                           fontSize: 16,
-  //                           color: Colors.black,
-  //                           // fontWeight: FontWeight.bold,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                     SizedBox(
-  //                       height: 4.0,
-  //                     ),
-  //                     Text(
-  //                       "Facebook",
-  //                       style: TextStyle(
-  //                           fontSize: 16,
-  //                           color: Theme.of(context).primaryColor,
-  //                           fontWeight: FontWeight.bold),
-  //                     ),
-  //                     SizedBox(
-  //                       height: 4.0,
-  //                     ),
-  //                     Text(
-  //                       "15, Jul 2020",
-  //                       style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //             Expanded(
-  //               flex: 1,
-  //               child: Container(
-  //                 child: IconButton(
-  //                     icon: Icon(
-  //                       Icons.cancel,
-  //                       color: Colors.red,
-  //                     ),
-  //                     onPressed: () {}),
-  //               ),
-  //             )
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //     // Or, uncomment the following line:
-  //     childCount: 1,
-  //   );
-  // }
+  SliverChildBuilderDelegate jobApplicationBlock() {
+    return SliverChildBuilderDelegate(
+      (BuildContext context, int index) {
+        return Container(
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+            color: Colors.grey[300],
+            width: 1.0,
+          ))),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                flex: 6,
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        child: Text(
+                          getText(widget
+                              .dashboardModel.data.appliedJobs[index].jobTitle),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            // fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 4.0,
+                      ),
+                      Text(
+                        getText(widget.dashboardModel.data.appliedJobs[index]
+                            .companyName),
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 4.0,
+                      ),
+                      Text(
+                        getText(widget.dashboardModel.data.appliedJobs[index]
+                            .appliedDate),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  child: IconButton(
+                      icon: Icon(
+                        Icons.cancel,
+                        color: Colors.red,
+                      ),
+                      onPressed: () {
+                        MyCustomDialog.showMe(
+                            context: context,
+                            title: "Warning !!!",
+                            widgets: Container(
+                              padding: EdgeInsets.all(30.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Are you sure for want to Delete your Application ?? ",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    " ${widget.dashboardModel.data.appliedJobs[index].jobTitle} ",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            onSubmit: () {
+                              try {
+                                JobPortalApi()
+                                    .deleteAppliedJob(
+                                        widget.dashboardModel.data
+                                            .appliedJobs[index].iD,
+                                        RepositoryProvider.of<UserRepository>(
+                                                context)
+                                            .user)
+                                    .then((value) =>
+                                        BlocProvider.of<AuthenticationBloc>(
+                                                context)
+                                            .add(ViewDashboardEvent()));
+                                Navigator.of(context).pop();
+                                MyToast.showToastMeasgage(
+                                    "Deleted Successfully",
+                                    color: Colors.green);
+                              } catch (e) {
+                                MyToast.showToastMeasgage("$e",
+                                    color: Colors.red);
+                              }
+                            });
+                      }),
+                ),
+              )
+            ],
+          ),
+        );
+      },
+      // Or, uncomment the following line:
+      childCount: widget.dashboardModel.data.appliedJobs.length,
+    );
+  }
 
   Widget tenthBlock() {
     return Container(
@@ -1040,12 +1090,12 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
             SliverList(
               delegate: seventhBlock(),
             ),
-            // SliverToBoxAdapter(
-            //   child: eighthBlock(),
-            // ),
-            // SliverList(
-            //   delegate: ninthBlock(),
-            // ),
+            SliverToBoxAdapter(
+              child: jobApplicationTitleBlock(),
+            ),
+            SliverList(
+              delegate: jobApplicationBlock(),
+            ),
             SliverToBoxAdapter(
               child: tenthBlock(),
             ),

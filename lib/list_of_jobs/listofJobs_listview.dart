@@ -67,14 +67,7 @@ class _ListOfJobListViewState extends State<ListOfJobListView> {
         },
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => EmployeerDetailPage(
-              //             // applxxxxxxxxxxxxied: false,
-              //             )));
-            },
+            onTap: () {},
             child: Row(
               children: [
                 Expanded(

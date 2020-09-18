@@ -20,7 +20,7 @@ class Data {
   Detail row;
   List<Experience> experience;
   List<Qualification> qualification;
-  int appliedJobs;
+  List<AppliedJobs> appliedJobs;
   List<Degrees> degrees;
   List<Resume> resume;
   RowAdditional rowAdditional;
@@ -54,7 +54,12 @@ class Data {
         qualification.add(new Qualification.fromJson(v));
       });
     }
-    appliedJobs = json['applied_jobs'];
+    if (json['applied_jobs'] != null) {
+      appliedJobs = new List<AppliedJobs>();
+      json['applied_jobs'].forEach((v) {
+        appliedJobs.add(new AppliedJobs.fromJson(v));
+      });
+    }
     if (json['degrees'] != null) {
       degrees = new List<Degrees>();
       json['degrees'].forEach((v) {
@@ -87,7 +92,9 @@ class Data {
       data['qualification'] =
           this.qualification.map((v) => v.toJson()).toList();
     }
-    data['applied_jobs'] = this.appliedJobs;
+    if (this.appliedJobs != null) {
+      data['applied_jobs'] = this.appliedJobs.map((v) => v.toJson()).toList();
+    }
     if (this.degrees != null) {
       data['degrees'] = this.degrees.map((v) => v.toJson()).toList();
     }
@@ -111,29 +118,29 @@ class Detail {
   String email;
   String password;
   String presentAddress;
-  String permanentAddress;
+  Null permanentAddress;
   String dated;
   String country;
   String city;
   String gender;
   String dob;
-  String phone;
-  String photo;
-  String defaultCvId;
+  Null phone;
+  Null photo;
+  Null defaultCvId;
   String mobile;
   String homePhone;
-  String cnic;
+  Null cnic;
   String nationality;
-  String careerObjective;
+  Null careerObjective;
   String sts;
-  String verificationCode;
+  Null verificationCode;
   String firstLoginDate;
   String lastLoginDate;
-  String slug;
+  Null slug;
   String ipAddress;
-  String oldId;
-  String flag;
-  String queueEmailSts;
+  Null oldId;
+  Null flag;
+  Null queueEmailSts;
   String sendJobAlert;
 
   Detail(
@@ -246,10 +253,10 @@ class Experience {
   String endDate;
   String city;
   String country;
-  String responsibilities;
+  Null responsibilities;
   String dated;
-  String flag;
-  String oldId;
+  Null flag;
+  Null oldId;
 
   Experience(
       {this.iD,
@@ -301,7 +308,7 @@ class Experience {
 class Qualification {
   String iD;
   String seekerID;
-  String degreeLevel;
+  Null degreeLevel;
   String degreeTitle;
   String major;
   String institude;
@@ -309,8 +316,8 @@ class Qualification {
   String city;
   String completionYear;
   String dated;
-  String flag;
-  String oldId;
+  Null flag;
+  Null oldId;
 
   Qualification(
       {this.iD,
@@ -359,11 +366,56 @@ class Qualification {
   }
 }
 
+class AppliedJobs {
+  String appliedId;
+  String appliedDate;
+  String iD;
+  String jobTitle;
+  String jobSlug;
+  String companyName;
+  String companySlug;
+  String companyLogo;
+
+  AppliedJobs(
+      {this.appliedId,
+      this.appliedDate,
+      this.iD,
+      this.jobTitle,
+      this.jobSlug,
+      this.companyName,
+      this.companySlug,
+      this.companyLogo});
+
+  AppliedJobs.fromJson(Map<String, dynamic> json) {
+    appliedId = json['applied_id'];
+    appliedDate = json['applied_date'];
+    iD = json['ID'];
+    jobTitle = json['job_title'];
+    jobSlug = json['job_slug'];
+    companyName = json['company_name'];
+    companySlug = json['company_slug'];
+    companyLogo = json['company_logo'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['applied_id'] = this.appliedId;
+    data['applied_date'] = this.appliedDate;
+    data['ID'] = this.iD;
+    data['job_title'] = this.jobTitle;
+    data['job_slug'] = this.jobSlug;
+    data['company_name'] = this.companyName;
+    data['company_slug'] = this.companySlug;
+    data['company_logo'] = this.companyLogo;
+    return data;
+  }
+}
+
 class Degrees {
   String iD;
   String val;
   String text;
-  String displayOrder;
+  Null displayOrder;
 
   Degrees({this.iD, this.val, this.text, this.displayOrder});
 
@@ -389,7 +441,7 @@ class Resume {
   String seekerID;
   String isUploadedResume;
   String fileName;
-  String resumeName;
+  Null resumeName;
   String dated;
   String isDefaultResume;
 
@@ -428,17 +480,17 @@ class Resume {
 class RowAdditional {
   String iD;
   String seekerID;
-  String languages;
-  String interest;
-  String awards;
-  String additionalQualities;
+  Null languages;
+  Null interest;
+  Null awards;
+  Null additionalQualities;
   String convictedCrime;
-  String crimeDetails;
+  Null crimeDetails;
   String summary;
-  String badHabits;
-  String salary;
-  String keywords;
-  String description;
+  Null badHabits;
+  Null salary;
+  Null keywords;
+  Null description;
 
   RowAdditional(
       {this.iD,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:jobportal_working/api_connection/api_connection.dart';
@@ -69,6 +70,7 @@ class AuthenticationBloc
 
         yield ViewDashboardState(dashboardModel);
       } catch (e) {
+        log("$e");
         yield AuthenticationFailedState(e.toString());
       }
     }
