@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:jobportal_working/authentication/authentication_bloc.dart';
 import 'package:jobportal_working/model/api_model.dart';
 import 'package:jobportal_working/model/user_model.dart';
 import 'package:jobportal_working/signup/model/employee_signup.dart';
@@ -23,6 +24,35 @@ class JobPortalApi {
     FormData formData = new FormData.fromMap(userLogin.toDatabaseJson());
     var response = await dio.post(_baseUrl + url, data: formData);
 
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  // Logout
+
+  Future<Map<String, dynamic>> loggedOut(User user) async {
+    final url = "Api/logout";
+
+    var dio = Dio();
+
+    FormData formData = new FormData.fromMap({
+      "user_id": user.userId,
+      "user_type": user.userType,
+      "mobile_token": user.mobileToken
+    });
+
+    print(_baseUrl + url);
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
     if (response.statusCode == 200) {
       print(response.statusCode);
       print(json.decode(response.data).toString());
@@ -102,6 +132,38 @@ class JobPortalApi {
     var response = await dio.post(
       _baseUrl + url,
     );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  // Get list of Applied Jobs
+  Future<dynamic> getListOfMyJobs(User user, int type) async {
+    var url = "Api/";
+
+    if (type == 1) {
+      url = url + "my_jobs";
+    } else {
+      url = url + "matching_jobs";
+    }
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    FormData formData = new FormData.fromMap({
+      "user_id": user.userId,
+      "user_type": user.userType,
+      "mobile_token": user.mobileToken
+    });
+
+    var response = await dio.post(_baseUrl + url, data: formData);
 
     if (response.statusCode == 200) {
       print(response.statusCode);
@@ -236,6 +298,31 @@ class JobPortalApi {
   Future<Map<String, dynamic>> updateProfile(
       Map<String, dynamic> sendData) async {
     final url = "Api/update_profile";
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    FormData formData = new FormData.fromMap(sendData);
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  Future<Map<String, dynamic>> updateAdditionalInfo(
+      Map<String, dynamic> sendData) async {
+    final url = "Api/update_additional_info";
 
     print(_baseUrl + url);
 
@@ -431,6 +518,128 @@ class JobPortalApi {
       "user_id": user.userId,
       "user_type": user.userType,
       "mobile_token": user.mobileToken
+    });
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  Future<dynamic> uploadProfilePic(User user, String fileLocation,
+      String fileExtension, bool isPhotoAlready) async {
+    final url = "Api/upload_profile_photo";
+
+    ;
+    FormData formData = new FormData.fromMap({
+      "user_id": user.userId,
+      "user_type": user.userType,
+      "mobile_token": user.mobileToken,
+      "profile_pic": await MultipartFile.fromFile(fileLocation,
+          filename: "mycv.$fileExtension")
+    });
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  Future<dynamic> deleteProfilePic(User user) async {
+    final url = "Api/delete_photo";
+
+    FormData formData = new FormData.fromMap({
+      "user_id": user.userId,
+      "user_type": user.userType,
+      "mobile_token": user.mobileToken,
+    });
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  Future<dynamic> uploadResume(User user, String fileLocation,
+      String fileExtension, bool isPhotoAlready) async {
+    final url = "Api/upload_cv";
+
+    ;
+    FormData formData = new FormData.fromMap({
+      "user_id": user.userId,
+      "user_type": user.userType,
+      "mobile_token": user.mobileToken,
+      "resume": await MultipartFile.fromFile(fileLocation,
+          filename: "mycv.$fileExtension")
+    });
+
+    print(_baseUrl + url);
+
+    var dio = Dio();
+
+    var response = await dio.post(
+      _baseUrl + url,
+      data: formData,
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(json.decode(response.data).toString());
+      return json.decode(response.data);
+    } else {
+      print(json.decode(response.data).toString());
+      throw Exception(json.decode(response.data));
+    }
+  }
+
+  Future<dynamic> deleteResume(User user, String fileName) async {
+    final url = "Api/delete_cv";
+
+    FormData formData = new FormData.fromMap({
+      "user_id": user.userId,
+      "user_type": user.userType,
+      "mobile_token": user.mobileToken,
+      "file_name": fileName,
+      "id": "34334"
     });
 
     print(_baseUrl + url);

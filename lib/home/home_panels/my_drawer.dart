@@ -6,13 +6,7 @@ import 'package:jobportal_working/authentication/authentication_bloc.dart';
 import 'package:jobportal_working/change_password/change_password.dart';
 import 'package:jobportal_working/home/home_panels/signup_dialog_widget.dart';
 import 'package:jobportal_working/model/user_model.dart';
-import 'package:jobportal_working/update_profile/update_profile_page.dart';
 import 'package:jobportal_working/user_repository/user_repository.dart';
-import 'package:jobportal_working/utils/appdropboxbutton.dart';
-import 'package:jobportal_working/utils/apptextfield.dart';
-import 'package:jobportal_working/utils/customRaisedCircularButton.dart';
-import 'package:jobportal_working/utils/mycustomDialogBox.dart';
-import 'package:jobportal_working/utils/mytoast.dart';
 
 class MyDrawer extends StatefulWidget {
   @override
@@ -37,124 +31,6 @@ class _MyDrawerState extends State<MyDrawer> {
   void initState() {
     userRepository = RepositoryProvider.of<UserRepository>(context);
     super.initState();
-  }
-
-  Future<void> updateSummary() async {
-    isLoading = true;
-
-    try {
-      await userRepository.updateSummary(
-        summaryTextController.text,
-      );
-      setState(() {
-        isLoading = false;
-      });
-      MyToast.showToastMeasgage("Updated Successfully", color: Colors.green);
-      Navigator.pop(context);
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      MyToast.showToastMeasgage("$e", color: Colors.red);
-    }
-  }
-
-  Future<void> addUpdateExperience() async {
-    isLoading = true;
-
-    try {
-      await userRepository.addUpdateExperience(
-          jobTitleTextController.text,
-          companyNameTextController.text,
-          countryInput,
-          cityNameTextController.text,
-          "${experienceStartDateTime.day}-${experienceStartDateTime.month}-${experienceStartDateTime.year}",
-          "present",
-          null);
-      setState(() {
-        isLoading = false;
-      });
-      MyToast.showToastMeasgage("Updated Successfully", color: Colors.green);
-      Navigator.pop(context);
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      MyToast.showToastMeasgage("$e", color: Colors.red);
-    }
-  }
-
-  Widget getExperenceDialogWidget() {
-    return Container(
-      child: Column(
-        children: [
-          AppTextField(
-              controller: jobTitleTextController,
-              icon: Icon(
-                Icons.title,
-                size: 25.0,
-              ),
-              label: "",
-              hint: "Job Title",
-              obscureText: false),
-          AppTextField(
-              controller: companyNameTextController,
-              icon: Icon(
-                Icons.title,
-                size: 25.0,
-              ),
-              label: "",
-              hint: "Company Name",
-              obscureText: false),
-          AppDropDownBox(
-            intialValue: countryInput,
-            onChange: (value) {
-              setState(() {
-                countryInput = value;
-              });
-            },
-            list: ["Australia", "China", "India", "America"],
-            hint: "",
-            width: MediaQuery.of(context).size.width,
-          ),
-          AppTextField(
-              controller: cityNameTextController,
-              icon: Icon(
-                Icons.title,
-                size: 25.0,
-              ),
-              label: "",
-              hint: "City Name",
-              obscureText: false),
-          CustomRaisedCircularButton(
-              onPressed: () {
-                print("pressed");
-                showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime.now())
-                    .then((value) {
-                  print(value.year);
-                  experienceStartDateTime = value;
-                  controller.add(
-                      "Start Date : ${experienceStartDateTime.day} / ${experienceStartDateTime.month} / ${experienceStartDateTime.year}");
-                });
-
-                print("done");
-                // print(experienceStartDateTime.year);
-              },
-              title: "Change Date"),
-          StreamBuilder(
-              stream: controller.stream,
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                return Text(snapshot.hasData
-                    ? snapshot.data
-                    : "Start Date : ${experienceStartDateTime.day} / ${experienceStartDateTime.month} / ${experienceStartDateTime.year}");
-              }),
-        ],
-      ),
-    );
   }
 
   Widget guestDrawer(BuildContext context) => Drawer(
@@ -183,7 +59,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 BlocProvider.of<AuthenticationBloc>(context)
                     .add(GoForSignUpEvent("jobseeker"));
                 Navigator.of(context).pop();
-              });
+              }, null, null);
             }, "Sign Up"),
           ],
         ),
@@ -226,65 +102,22 @@ class _MyDrawerState extends State<MyDrawer> {
                   )),
             ),
             MyDrawerTile(Icon(Icons.account_circle), () {}, "Dashboard"),
-            MyDrawerTile(Icon(Icons.apps), () {}, "My Application"),
+            MyDrawerTile(Icon(Icons.apps), () {
+              BlocProvider.of<AuthenticationBloc>(context)
+                  .add(GoForListofJobEvent("matchingJobs"));
+            }, "Matching Jobs"),
             MyDrawerTile(Icon(Icons.list), () {
               BlocProvider.of<AuthenticationBloc>(context)
-                  .add(GoForListofJobEvent("listofjobs"));
+                  .add(GoForListofJobEvent("listOfJobs"));
             }, "List of jobs"),
             MyDrawerTile(Icon(Icons.add), () {
               BlocProvider.of<AuthenticationBloc>(context)
                   .add(GoToManageEvent());
             }, "Manage Skills"),
             MyDrawerTile(Icon(Icons.add), () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => UpdateProfilePage(
-                          RepositoryProvider.of<UserRepository>(context))));
-            }, "Update Profile"),
-            MyDrawerTile(Icon(Icons.add), () {
-              isLoading == true
-                  ? Container(
-                      child: Center(
-                      child: CircularProgressIndicator(),
-                    ))
-                  : MyCustomDialog.showMe(
-                      context: context,
-                      title: "Professional Summary",
-                      widgets: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 10.0),
-                        child: TextField(
-                          controller: summaryTextController,
-                          minLines: 5,
-                          maxLines: 5,
-                        ),
-                      ),
-                      onSubmit: updateSummary);
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => EditSummaryPage("inital value", 1,
-              //             RepositoryProvider.of<UserRepository>(context))));
-            }, "Update Summary"),
-            MyDrawerTile(Icon(Icons.add), () {
-              isLoading == true
-                  ? Container(
-                      child: Center(
-                      child: CircularProgressIndicator(),
-                    ))
-                  : MyCustomDialog.showMe(
-                      context: context,
-                      title: "Experience",
-                      widgets: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 10.0),
-                        child: getExperenceDialogWidget(),
-                      ),
-                      onSubmit: () {
-                        addUpdateExperience();
-                      });
-            }, "Add Experience"),
+              BlocProvider.of<AuthenticationBloc>(context)
+                  .add(GoForListofJobEvent("listOfMyJobs"));
+            }, "My Applications"),
             MyDrawerTile(Icon(Icons.add), () {
               Navigator.push(
                   context,

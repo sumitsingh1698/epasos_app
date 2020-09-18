@@ -6,6 +6,7 @@ import 'package:jobportal_working/model/api_model.dart';
 import 'package:jobportal_working/model/user_model.dart';
 import 'package:jobportal_working/signup/model/employee_signup.dart';
 import 'package:jobportal_working/signup/model/jobseeker_signup.dart';
+import 'package:jobportal_working/update_profile/update_additional_Info.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -59,11 +60,17 @@ class UserRepository {
   }
 
   Future<bool> removeUser() async {
-    user = null;
-    final SharedPreferences prefs = await _prefs;
-    prefs.setString("email", null);
-    prefs.setString("pass", null);
-    return true;
+    Map<String, dynamic> data = await JobPortalApi().loggedOut(user);
+
+    if (data['status'] == true) {
+      user = null;
+      final SharedPreferences prefs = await _prefs;
+      prefs.setString("email", null);
+      prefs.setString("pass", null);
+      return true;
+    } else {
+      throw Exception("${data['message']}");
+    }
   }
 
   Future<bool> signUpJobSeeker(JobSeekerSignup employeeSignUp) async {
@@ -157,6 +164,38 @@ class UserRepository {
     });
 
     Map<String, dynamic> data = await JobPortalApi().updateProfile(senddata);
+    if (data['status'] == true) {
+      print("updatedSuccessfully");
+
+      hasUser();
+      return true;
+    } else {
+      throw Exception(data['message']);
+    }
+  }
+
+  Future<bool> updateAdditionalInfo(RowAdditional rowAdditional) async {
+    Map<String, dynamic> senddata = {};
+
+    senddata.addAll({
+      'languages': rowAdditional.languages,
+      'interest': rowAdditional.interest,
+      'awards': rowAdditional.awards,
+      'additional_qualities': rowAdditional.additionalQualities,
+      'convicted_crime': rowAdditional.convictedCrime,
+      'crime_details': rowAdditional.crimeDetails,
+      'summary': rowAdditional.summary,
+      'bad_habits': rowAdditional.badHabits,
+      'salary': rowAdditional.salary,
+      'keywords': rowAdditional.keywords,
+      'description': rowAdditional.description,
+      'user_id': user.userId,
+      'user_type': user.userType,
+      'mobile_token': user.mobileToken,
+    });
+
+    Map<String, dynamic> data =
+        await JobPortalApi().updateAdditionalInfo(senddata);
     if (data['status'] == true) {
       print("updatedSuccessfully");
 

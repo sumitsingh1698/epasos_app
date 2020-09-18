@@ -40,8 +40,12 @@ class AuthenticationBloc
 
     if (event is LoggedOut) {
       yield AuthenticationLoadingState();
-      await userRepository.removeUser();
-      yield AuthenticationUnauthenticated();
+      try {
+        await userRepository.removeUser();
+        yield AuthenticationUnauthenticated();
+      } catch (e) {
+        AuthenticationFailedState("$e");
+      }
     }
     if (event is GoForLoggedInEvent) {
       yield GoForLoggedInState();
@@ -53,7 +57,7 @@ class AuthenticationBloc
       yield BacktoHomeState();
     }
     if (event is GoForListofJobEvent) {
-      yield GoToListOfJobState("listofjobs");
+      yield GoToListOfJobState(event.type);
     }
     if (event is GoToManageEvent) {
       yield GotoManageSkillState();

@@ -41,6 +41,9 @@ dependencies:
   shared_preferences: ^0.5.10
   file_picker: ^2.0.0
   fluttertoast: ^7.1.1
+  url_launcher: ^5.6.0
+
+
 
 
 

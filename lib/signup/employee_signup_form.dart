@@ -42,6 +42,7 @@ class _SignUpEmployeeFormState extends State<SignUpEmployeeForm> {
 
   Future<void> pickFile() async {
     FilePickerResult result = await FilePicker.platform.pickFiles();
+
     if (result != null) {
       PlatformFile file = result.files.first;
       print(file.name);

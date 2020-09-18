@@ -15,3 +15,11 @@ class ViewListEvent extends ListofjobEvent {
   @override
   List<Object> get props => [typeOfList];
 }
+
+class DeleteMyApplicationEvent extends ListofjobEvent {
+  final String deleteId;
+
+  DeleteMyApplicationEvent({@required this.deleteId});
+  @override
+  List<Object> get props => [deleteId];
+}

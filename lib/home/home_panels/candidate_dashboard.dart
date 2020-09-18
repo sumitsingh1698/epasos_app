@@ -1,18 +1,23 @@
 import 'dart:async';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jobportal_working/api_connection/api_connection.dart';
 import 'package:jobportal_working/authentication/authentication_bloc.dart';
 import 'package:jobportal_working/home/home_panels/qualification_page.dart';
 import 'package:jobportal_working/home/home_panels/experiences_page.dart';
+import 'package:jobportal_working/home/home_panels/signup_dialog_widget.dart';
 import 'package:jobportal_working/home/home_widget/additional_dashboard_widget.dart';
 import 'package:jobportal_working/home/model/dashboard_model.dart';
+import 'package:jobportal_working/update_profile/update_additional_Info.dart';
 import 'package:jobportal_working/update_profile/update_profile_page.dart';
+import 'package:jobportal_working/urls.dart';
 import 'package:jobportal_working/user_repository/user_repository.dart';
 import 'package:jobportal_working/utils/customRaisedCircularButton.dart';
 import 'package:jobportal_working/utils/mycustomDialogBox.dart';
 import 'package:jobportal_working/utils/mytoast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'dragableListSheetComment.dart';
 
@@ -78,6 +83,9 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
   }
 
   Widget firstBlock() {
+    bool isPhotoAlready =
+        getText(widget.dashboardModel.data.row.photo) != '' ? true : false;
+    print("photos :" + widget.dashboardModel.data.row.photo);
     return Container(
       child: Stack(
         children: [
@@ -111,16 +119,145 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
             left: MediaQuery.of(context).size.width / 2 - 40,
             height: 80,
             width: 80,
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(
-                  "https://cdn03.boxcdn.net/sites/default/files/2018-10/icon-24.png"),
-              radius: 1000.0,
-              backgroundColor: Colors.white,
-            ),
+            child: isPhotoAlready == true
+                ? GestureDetector(
+                    onTap: () {
+                      showSignupDialog(context, () {
+                        try {
+                          JobPortalApi()
+                              .deleteProfilePic(
+                                RepositoryProvider.of<UserRepository>(context)
+                                    .user,
+                              )
+                              .then((value) =>
+                                  Scaffold.of(context).showSnackBar(SnackBar(
+                                    content: Text('successFully Deleted'),
+                                    backgroundColor: Colors.green,
+                                  )));
+                        } catch (e) {
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                            content: Text('$e'),
+                            backgroundColor: Colors.red,
+                          ));
+                        }
+
+                        Navigator.of(context).pop();
+                      }, () async {
+                        FilePickerResult result =
+                            await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['jpg', 'png', 'jpeg'],
+                        );
+                        if (result != null) {
+                          PlatformFile file = result.files.first;
+                          print(file.name);
+                          print(file.path);
+                          print(file.size);
+                          print(file.extension);
+
+                          try {
+                            JobPortalApi()
+                                .deleteProfilePic(
+                              RepositoryProvider.of<UserRepository>(context)
+                                  .user,
+                            )
+                                .then((value) {
+                              JobPortalApi()
+                                  .uploadProfilePic(
+                                      RepositoryProvider.of<UserRepository>(
+                                              context)
+                                          .user,
+                                      file.path,
+                                      file.extension,
+                                      true)
+                                  .then((value) {
+                                Scaffold.of(context).showSnackBar(SnackBar(
+                                  content: Text('successFully Added'),
+                                  backgroundColor: Colors.red,
+                                ));
+                              });
+                            });
+                          } catch (e) {
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text('$e'),
+                              backgroundColor: Colors.red,
+                            ));
+                          }
+                        }
+
+                        print("Upload Pressed");
+
+                        Navigator.of(context).pop();
+                      }, "Upload", "Removed");
+                    },
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(
+                          "http://job.educarep.com/public/uploads/candidate/" +
+                              widget.dashboardModel.data.row.photo),
+                      radius: 1000.0,
+                      backgroundColor: Colors.white,
+                    ),
+                  )
+                : GestureDetector(
+                    onTap: () {
+                      showSignupDialog(context, null, () async {
+                        FilePickerResult result =
+                            await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['jpg', 'png', 'jpeg'],
+                        );
+                        if (result != null) {
+                          PlatformFile file = result.files.first;
+                          print(file.name);
+                          print(file.path);
+                          print(file.size);
+                          print(file.extension);
+
+                          try {
+                            JobPortalApi().uploadProfilePic(
+                                RepositoryProvider.of<UserRepository>(context)
+                                    .user,
+                                file.path,
+                                file.extension,
+                                false);
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text('successFully Added'),
+                              backgroundColor: Colors.red,
+                            ));
+                          } catch (e) {
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text('$e'),
+                              backgroundColor: Colors.red,
+                            ));
+                          }
+                        }
+
+                        print("Upload Pressed");
+
+                        Navigator.of(context).pop();
+                      }, "Upload", "Removed");
+                    },
+                    child: CircleAvatar(
+                      child: Text(
+                        widget.dashboardModel.data.row.firstName[0]
+                            .toUpperCase(),
+                        style: TextStyle(fontSize: 40),
+                      ),
+                      backgroundColor: Colors.white,
+                    ),
+                  ),
           )
         ],
       ),
     );
+  }
+
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   Widget secondBlock() {
@@ -170,8 +307,114 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
             title: "Review",
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              GestureDetector(
+                onTap: () {
+                  bool isResume = widget.dashboardModel.data.resume.length != 0
+                      ? true
+                      : false;
+
+                  if (isResume) {
+                    _launchURL(Urls.imageBaseUrlOfJobSeeker +
+                        "resumes/" +
+                        widget.dashboardModel.data.resume[0].fileName);
+                    print(widget.dashboardModel.data.resume[0].fileName);
+                  }
+                  showSignupDialog(
+                      context,
+                      isResume
+                          ? () {
+                              try {
+                                JobPortalApi()
+                                    .deleteResume(
+                                        RepositoryProvider.of<UserRepository>(
+                                                context)
+                                            .user,
+                                        widget.dashboardModel.data.resume[0]
+                                            .fileName)
+                                    .then((value) => Scaffold.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: Text('successFully Deleted'),
+                                          backgroundColor: Colors.green,
+                                        )));
+                              } catch (e) {
+                                Scaffold.of(context).showSnackBar(SnackBar(
+                                  content: Text('$e'),
+                                  backgroundColor: Colors.red,
+                                ));
+                              }
+
+                              Navigator.of(context).pop();
+                            }
+                          : null, () async {
+                    FilePickerResult result =
+                        await FilePicker.platform.pickFiles(
+                      type: FileType.custom,
+                      allowedExtensions: ['pdf'],
+                    );
+                    if (result != null) {
+                      PlatformFile file = result.files.first;
+                      print(file.name);
+                      print(file.path);
+                      print(file.size);
+                      print(file.extension);
+
+                      try {
+                        JobPortalApi()
+                            .deleteResume(
+                                RepositoryProvider.of<UserRepository>(context)
+                                    .user,
+                                widget.dashboardModel.data.resume[0].fileName)
+                            .then((value) {
+                          JobPortalApi()
+                              .uploadResume(
+                                  RepositoryProvider.of<UserRepository>(context)
+                                      .user,
+                                  file.path,
+                                  file.extension,
+                                  true)
+                              .then((value) {
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text('successFully Added'),
+                              backgroundColor: Colors.red,
+                            ));
+                          });
+                        });
+                      } catch (e) {
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text('$e'),
+                          backgroundColor: Colors.red,
+                        ));
+                      }
+                    }
+
+                    print("Upload Pressed");
+
+                    Navigator.of(context).pop();
+                  }, "Upload", "Removed");
+                },
+                child: Container(
+                  child: Row(
+                    children: [
+                      Text(
+                        " Resume",
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: 5.0,
+                      ),
+                      Icon(Icons.edit),
+                      SizedBox(
+                        width: 10.0,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -798,10 +1041,8 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => MyApplications()));
+                    BlocProvider.of<AuthenticationBloc>(context)
+                        .add(GoForListofJobEvent("listOfMyJobs"));
                   },
                   child: Row(
                     children: [
@@ -810,14 +1051,7 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                         style: TextStyle(
                             fontSize: 14, fontWeight: FontWeight.bold),
                       ),
-                      IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) => MyApplications()));
-                          }),
+                      IconButton(icon: Icon(Icons.edit), onPressed: () {}),
                     ],
                   ),
                 )
@@ -972,7 +1206,16 @@ class _CandidateDashboardState extends State<CandidateDashboard> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => UpdateAdditionalInfoPage(
+                                  userRepository,
+                                  additionalInfo:
+                                      widget.dashboardModel.data.rowAdditional,
+                                )));
+                  },
                   child: Row(
                     children: [
                       Text(

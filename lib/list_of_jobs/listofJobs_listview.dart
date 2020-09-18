@@ -1,59 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jobportal_working/list_of_jobs/api_model/listJobs.dart';
+import 'package:jobportal_working/list_of_jobs/bloc/listofjob_bloc.dart';
+import 'package:jobportal_working/urls.dart';
+import 'package:jobportal_working/utils/network_image_modifier.dart';
 import 'package:jobportal_working/utils/rating_tag.dart';
 
 class ListOfJobListView extends StatefulWidget {
+  bool isDeletedAble;
   ListJobs listJobs;
 
-  ListOfJobListView(this.listJobs);
+  ListOfJobListView(this.listJobs, {this.isDeletedAble = false});
   @override
   _ListOfJobListViewState createState() => _ListOfJobListViewState();
 }
 
 class _ListOfJobListViewState extends State<ListOfJobListView> {
-  List<Job> jobs = [
-    Job(
-      company: "Facebook",
-      jobType: "Full Time",
-      title: "Software Developer",
-      location: "New Delhi",
-      imgUrl:
-          "https://w7.pngwing.com/pngs/933/615/png-transparent-social-media-facebook-computer-icons-logo-facebook-blue-text-rectangle.png",
-      lastDate: "10 Sep 2020",
-      salary: "10k - 15k/month",
-    ),
-    Job(
-      company: "Google",
-      jobType: "Full Time",
-      title: "Software Developer of Flutter",
-      location: "Mumbai",
-      imgUrl:
-          "https://cdn03.boxcdn.net/sites/default/files/2018-10/icon-24.png",
-      lastDate: "11 Aug 2020",
-      salary: "100k - 105k/month",
-    ),
-    Job(
-      company: "Apple",
-      jobType: "Full Time",
-      title: "Operating System Developer",
-      location: "New Delhi",
-      imgUrl:
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/505px-Apple_logo_black.svg.png",
-      lastDate: "10 Dec 2020",
-      salary: "10M - 15M/month",
-    ),
-    Job(
-      company: "Infosis",
-      jobType: "Part Time",
-      title: "Flutter Intern",
-      location: "New Delhi",
-      imgUrl:
-          "https://paymentweek.com/wp-content/uploads/2018/01/infosys-logo.jpg",
-      lastDate: "30 Sep 2020",
-      salary: "10k/month",
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -158,10 +120,33 @@ class _ListOfJobListViewState extends State<ListOfJobListView> {
                 ),
                 Expanded(
                   flex: 1,
-                  child: SizedBox(
-                    width: 60.0,
-                    height: 60.0,
-                    // child: Image.network("${jobs[index].imgUrl}"),
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(
+                          width: 60.0,
+                          height: 60.0,
+                          child: CircleAvatar(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              child: widget.listJobs.data[index].companyLogo ==
+                                      null
+                                  ? Container()
+                                  : NetworkImageModified(
+                                      Urls.imageBaseUrlOfEmployer +
+                                          widget.listJobs.data[index]
+                                              .companyLogo))),
+                      if (widget.isDeletedAble == true)
+                        IconButton(
+                          onPressed: () {
+                            BlocProvider.of<ListofjobBloc>(context).add(
+                                DeleteMyApplicationEvent(
+                                    deleteId: widget.listJobs.data[index].iD));
+                          },
+                          icon: Icon(
+                            Icons.cancel,
+                            size: 35.0,
+                          ),
+                        )
+                    ],
                   ),
                 ),
               ],
@@ -171,24 +156,4 @@ class _ListOfJobListViewState extends State<ListOfJobListView> {
       ),
     );
   }
-}
-
-class Job {
-  String title;
-  String location;
-  String company;
-  String jobType;
-  String lastDate;
-  String salary;
-  String imgUrl;
-
-  Job({
-    @required this.title,
-    @required this.location,
-    @required this.company,
-    @required this.imgUrl,
-    @required this.jobType,
-    @required this.lastDate,
-    @required this.salary,
-  });
 }
